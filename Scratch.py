@@ -11,23 +11,15 @@ bias1 = 2
 bias2 = 3
 bias3 = 0.5
 
-outputs = [
-    # neuron 1:
-    input[0]*weights[0][0]+
-    input[1]*weights[0][1]+
-    input[2]*weights[0][2]+
-    input[3]*weights[0][3]+ bias1,
-    # neuron 2:
-    input[0]*weights[1][0]+
-    input[1]*weights[1][1]+
-    input[2]*weights[1][2]+
-    input[3]*weights[1][3]+ bias2,
-    # neuron 3:
-    input[0]*weights[2][0]+
-    input[1]*weights[2][1]+
-    input[2]*weights[2][2]+
-    input[3]*weights[2][3]+ bias3
-]
+layer_output = []
+# Using For Loops to create a simpler and scalable network
+for neuron_weights, neuron_bias in zip(weights, biases):
+    neuron_output = 0
 
+    for n_input, weight in zip(input, neuron_weights):
+        neuron_output += n_input*weight
+    
+    neuron_output+=neuron_bias
+    layer_output.append(neuron_output)
 
-print(outputs)
+print(layer_output)
