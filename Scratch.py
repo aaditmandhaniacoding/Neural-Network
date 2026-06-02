@@ -1,5 +1,6 @@
 # Neuron Layering
 import numpy as np
+import nnfs
 
 # Dense Layer
 class Layer_Dense:
