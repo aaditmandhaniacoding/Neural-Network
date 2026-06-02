@@ -15,12 +15,6 @@ bias3 = 0.5
 
 layer_output = []
 # Using For Loops to create a simpler and scalable network
-for neuron_weights, neuron_bias in zip(weights, biases):
-    neuron_output = 0
-
-    for n_input, weight in zip(input, neuron_weights):
-        neuron_output += n_input*weight
-    neuron_output+=neuron_bias
-    layer_output.append(neuron_output)
+layer_output = np.dot(weights,input)+biases
 
 print(layer_output)
