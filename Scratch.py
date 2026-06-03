@@ -21,3 +21,6 @@ dense1 = Layer_Dense(2,3)
 dense1.forward(X)
 
 print(dense1.output[:5])
+
+class Activation_Relu:
+    pass
