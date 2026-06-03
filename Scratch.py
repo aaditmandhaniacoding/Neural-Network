@@ -23,4 +23,7 @@ dense1.forward(X)
 print(dense1.output[:5])
 
 class Activation_Relu:
-    pass
+    def forward(self, inputs):
+        # calculate output values from input
+        self.output = np.maximum(0, inputs)
+    
