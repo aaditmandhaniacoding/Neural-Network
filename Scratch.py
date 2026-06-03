@@ -26,4 +26,5 @@ class Activation_Relu:
     def forward(self, inputs):
         # calculate output values from input
         self.output = np.maximum(0, inputs)
-    
+class Activation_SoftMax:
+    pass
