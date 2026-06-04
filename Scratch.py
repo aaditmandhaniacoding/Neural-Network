@@ -14,6 +14,11 @@ class Activation_SoftMax:
         probabilities = exp_values / np.sum(exp_values, axis = 1, keepdims = True)
 
         self.output = probabilities
+class Loss:
+    pass
+
+class Loss_CategoricalentropyLoss(Loss):
+    pass
 
 # Dense Layer
 class Layer_Dense:
