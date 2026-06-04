@@ -24,7 +24,18 @@ class Loss:
         return data_loss
 
 class Loss_CategoricalentropyLoss(Loss):
-    pass
+    def forward(self, y_pred, y_true):
+        # num samples in batch
+        samples = len(y_pred)
+        # clip it so that it never reaches 0 or 1
+        y_pred_clipped = np.clip(y_pred, 1e-7, 1-1e-7)
+
+        if len(y_true.shape)==1:
+            correct_confidence = y_pred_clipped[range(samples), y_true]
+        elif len(y_true.shape)==2:
+            correct_confidence = np.sum(y_pred_clipped*y_true, axis = 1)
+        negative_log_likelihoods = -np.log(correct_confidence)
+        return negative_log_likelihoods
 
 # Dense Layer
 class Layer_Dense:
