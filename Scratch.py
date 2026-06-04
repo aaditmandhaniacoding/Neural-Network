@@ -15,7 +15,13 @@ class Activation_SoftMax:
 
         self.output = probabilities
 class Loss:
-    pass
+    def calculate(self, output, y):
+        # calculate the sample losses
+        sample_losses = self.forward(output,y)
+        # mean loss
+        data_loss = np.mean(sample_losses)
+
+        return data_loss
 
 class Loss_CategoricalentropyLoss(Loss):
     pass
