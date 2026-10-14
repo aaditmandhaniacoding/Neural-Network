@@ -1,7 +1,7 @@
 # Neuron Layering
 import numpy as np
 import nnfs
-from nnfs.datasets import spiral_data
+from nnfs.datasets import vertical_data
 nnfs.init()
 
 class Activation_Relu:
@@ -49,7 +49,7 @@ class Layer_Dense:
         # calculate output values from input, weights, and biases
         self.output = np.dot(inputs, self.weights) + self.biases
 # creates a dataset
-X, y = spiral_data(samples = 100, classes = 3)
+X, y = vertical_data(samples = 100, classes = 3)
 # creates a dense layer with 2 input features and 3 output values
 dense1 = Layer_Dense(2,3)
 # create Relu activation (will be used with dense layer):
@@ -65,28 +65,42 @@ loss_function = Loss_CategoricalentropyLoss()
 lowest_loss = 9999999
 best_dense1_weights = dense1.weights.copy()
 best_dense1_biases = dense1.biases.copy()
-best_dense1_weights = dense2.weights.copy()
-best_dense1_biases = dense2.biases.copy()
+best_dense2_weights = dense2.weights.copy()
+best_dense2_biases = dense2.biases.copy()
 
+for iteration in range(10000):
+    dense1.weights += .05 * np.random.randn(2, 3)
+    dense1.biases += .05 * np.random.randn(1, 3)
+    dense2.weights += .05 * np.random.randn(3, 3)
+    dense2.biases += .05 * np.random.randn(1, 3)
+    # perform a forward pass of the training data through this layer
+    dense1.forward(X)
 
-# perform a forward pass of the training data through this layer
-dense1.forward(X)
+    #Make a forward pass through activation func
+    # output of first layer in this
+    activation1.forward(dense1.output)
+    #Make a forward pass through second Dense layer
+    # output of second layer in this
+    dense2.forward(activation1.output)
+    #Make a forward pass through activation func
+    # output of second layer in this
+    activation2.forward(dense2.output)
+    loss = loss_function.calculate(activation2.output, y)
 
-#Make a forward pass through activation func
-# output of first layer in this
-activation1.forward(dense1.output)
-#Make a forward pass through second Dense layer
-# output of second layer in this
-dense2.forward(activation1.output)
-#Make a forward pass through activation func
-# output of second layer in this
-activation2.forward(dense2.output)
-loss = loss_function.calculate(activation2.output, y)
+    #Calculate accuracy from output of activation2 and targets
+    #calculate values along first axis
+    predictions = np.argmax(activation2.output, axis = 1)
+    accuracy = np.mean(predictions == y)
 
-#Calculate accuracy from output of activation2 and targets
-#calculate values along first axis
-predictions = np.argmax(activation2.output, axis = 1)
-accuracy = np.mean(predictions == y)
-print(activation2.output[:5])
-print(loss)
-print(accuracy)
+    if loss < lowest_loss:
+        print("New set of weights found, iteration", iteration, "loss:", loss, "acc:", accuracy)
+        best_dense1_weights = dense1.weights.copy()
+        best_dense1_biases = dense1.biases.copy()
+        best_dense2_weights = dense2.weights.copy()
+        best_dense2_biases = dense2.biases.copy()
+        lowest_loss = loss
+    else:
+        dense1.weights = best_dense1_weights.copy()
+        dense1.biases = best_dense1_biases.copy()
+        dense2.weights = best_dense2_weights.copy()
+        dense2.biases = best_dense2_biases.copy()
