@@ -37,6 +37,7 @@ class Loss_CategoricalentropyLoss(Loss):
         negative_log_likelihoods = -np.log(correct_confidence)
         return negative_log_likelihoods
 
+
 # Dense Layer
 class Layer_Dense:
     def __init__(self, n_inputs, n_neurons):
@@ -57,6 +58,8 @@ activation1 = Activation_Relu()
 dense2 = Layer_Dense(3, 3)
 # create a Softmax activation (will be used with dense layer):
 activation2 = Activation_SoftMax()
+# create a loss function
+loss_function = Loss_CategoricalentropyLoss()
 # perform a forward pass of the training data through this layer
 dense1.forward(X)
 
@@ -69,5 +72,12 @@ dense2.forward(activation1.output)
 #Make a forward pass through activation func
 # output of second layer in this
 activation2.forward(dense2.output)
+loss = loss_function.calculate(activation2.output, y)
 
+#Calculate accuracy from output of activation2 and targets
+#calculate values along first axis
+predictions = np.argmax(activation2.output, axis = 1)
+accuracy = np.mean(predictions == y)
 print(activation2.output[:5])
+print(loss)
+print(accuracy)
