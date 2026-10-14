@@ -60,6 +60,15 @@ dense2 = Layer_Dense(3, 3)
 activation2 = Activation_SoftMax()
 # create a loss function
 loss_function = Loss_CategoricalentropyLoss()
+
+#Helper Variables
+lowest_loss = 9999999
+best_dense1_weights = dense1.weights.copy()
+best_dense1_biases = dense1.biases.copy()
+best_dense1_weights = dense2.weights.copy()
+best_dense1_biases = dense2.biases.copy()
+
+
 # perform a forward pass of the training data through this layer
 dense1.forward(X)
 
