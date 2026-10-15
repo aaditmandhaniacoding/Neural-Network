@@ -11,6 +11,12 @@ class Activation_Relu:
     def forward(self, inputs):
         # calculate output values from input
         self.output = np.maximum(0, inputs)
+    def backward(self, dvalues):
+        # Since we need to modify the original variable
+        # lets make a copy of values first
+        self.dinputs = dvalues.copy()
+        # Zero gradient where input values were negative
+        self.dinputs[self.inputs <= 0] = 0
 
 class Activation_SoftMax:
     def forward(self, inputs):
@@ -54,10 +60,10 @@ class Layer_Dense:
         self.output = np.dot(inputs, self.weights) + self.biases
 
     def backward(self, dvalues):
-        #Gradients of parameter
+        # Gradients of parameter
         self.dweights = np.dot(self.inputs.T, dvalues)
         self.dbiases = np.sum(dvalues, axis = 0, keepdims = True)
-        #Gradients on values
+        # Gradients on values
         self.dinputs = np.dot(dvalues, self.weights.T)
 # creates a dataset
 X, y = spiral_data(samples = 100, classes = 3)
@@ -90,16 +96,16 @@ for iteration in range(10000):
     #Make a forward pass through activation func
     # output of first layer in this
     activation1.forward(dense1.output)
-    #Make a forward pass through second Dense layer
+    # Make a forward pass through second Dense layer
     # output of second layer in this
     dense2.forward(activation1.output)
-    #Make a forward pass through activation func
+    # Make a forward pass through activation func
     # output of second layer in this
     activation2.forward(dense2.output)
     loss = loss_function.calculate(activation2.output, y)
 
-    #Calculate accuracy from output of activation2 and targets
-    #calculate values along first axis
+    # Calculate accuracy from output of activation2 and targets
+    # calculate values along first axis
     predictions = np.argmax(activation2.output, axis = 1)
     accuracy = np.mean(predictions == y)
 
@@ -118,13 +124,13 @@ for iteration in range(10000):
 # perform a forward pass of the training data through this layer
 dense1.forward(X)
 
-#Make a forward pass through activation func
+# Make a forward pass through activation func
 # output of first layer in this
 activation1.forward(dense1.output)
-#Make a forward pass through second Dense layer
+# Make a forward pass through second Dense layer
 # output of second layer in this
 dense2.forward(activation1.output)
-#Make a forward pass through activation func
+# Make a forward pass through activation func
 # output of second layer in this
 activation2.forward(dense2.output)
 loss = loss_function.calculate(activation2.output, y)
