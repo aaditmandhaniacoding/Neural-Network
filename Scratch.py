@@ -104,3 +104,18 @@ for iteration in range(10000):
         dense1.biases = best_dense1_biases.copy()
         dense2.weights = best_dense2_weights.copy()
         dense2.biases = best_dense2_biases.copy()
+# perform a forward pass of the training data through this layer
+dense1.forward(X)
+
+#Make a forward pass through activation func
+# output of first layer in this
+activation1.forward(dense1.output)
+#Make a forward pass through second Dense layer
+# output of second layer in this
+dense2.forward(activation1.output)
+#Make a forward pass through activation func
+# output of second layer in this
+activation2.forward(dense2.output)
+loss = loss_function.calculate(activation2.output, y)
+print(activation2.output[:5])
+print(loss)
