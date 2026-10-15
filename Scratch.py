@@ -89,11 +89,11 @@ class Layer_Dense:
 # creates a dataset
 X, y = spiral_data(samples = 100, classes = 3)
 # creates a dense layer with 2 input features and 3 output values
-dense1 = Layer_Dense(2,3)
+dense1 = Layer_Dense(2,256)
 # create Relu activation (will be used with dense layer):
 activation1 = Activation_Relu()
 # create a second Dense layer with 3 input features (take output from previous layer here) and three output values
-dense2 = Layer_Dense(3, 3)
+dense2 = Layer_Dense(256, 3)
 # create a Softmax activation (will be used with dense layer):
 activation2 = Activation_SoftMax()
 # create a loss function
