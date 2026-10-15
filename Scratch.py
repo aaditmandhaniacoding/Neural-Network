@@ -1,13 +1,17 @@
 # Neuron Layering
 import numpy as np
 import nnfs
-from nnfs.datasets import vertical_data
+from nnfs.datasets import spiral_data
 nnfs.init()
+
+learning_rate = .001
+
 
 class Activation_Relu:
     def forward(self, inputs):
         # calculate output values from input
         self.output = np.maximum(0, inputs)
+
 class Activation_SoftMax:
     def forward(self, inputs):
         exp_values = np.exp(inputs - np.max(inputs, axis = 1, keepdims = True))
@@ -48,8 +52,15 @@ class Layer_Dense:
     def forward(self, inputs):
         # calculate output values from input, weights, and biases
         self.output = np.dot(inputs, self.weights) + self.biases
+
+    def backward(self, dvalues):
+        #Gradients of parameter
+        self.dweights = np.dot(self.inputs.T, dvalues)
+        self.dbiases = np.sum(dvalues, axis = 0, keepdims = True)
+        #Gradients on values
+        self.dinputs = np.dot(dvalues, self.weights.T)
 # creates a dataset
-X, y = vertical_data(samples = 100, classes = 3)
+X, y = spiral_data(samples = 100, classes = 3)
 # creates a dense layer with 2 input features and 3 output values
 dense1 = Layer_Dense(2,3)
 # create Relu activation (will be used with dense layer):
