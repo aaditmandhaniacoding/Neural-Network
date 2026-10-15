@@ -4,8 +4,7 @@ import nnfs
 from nnfs.datasets import spiral_data
 nnfs.init()
 
-learning_rate = .001
-
+learning_rate = 0.05
 
 class Activation_Relu:
     def forward(self, inputs):
@@ -72,7 +71,7 @@ class Activation_Softmax_Loss_CategoricalCrossentropy:
 # Dense Layer
 class Layer_Dense:
     def __init__(self, n_inputs, n_neurons):
-        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons) # creates a matrix of random numbers drawn from a normal (Gaussian) distribution with mean: 0 and SD: 1
+        self.weights = np.random.randn(n_inputs, n_neurons) # creates a matrix of random numbers drawn from a normal (Gaussian) distribution with mean: 0 and SD: 1
         
         self.biases = np.zeros((1,n_neurons)) # creates a row with n_neurons amount of columns of zeroes
 
@@ -100,37 +99,29 @@ activation2 = Activation_SoftMax()
 # create a loss function
 loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
 
+y_labels = np.argmax(y, axis=1) if len(y.shape) == 2 else y
 
-# perform a forward pass of the training data through this layer
-dense1.forward(X)
-#Make a forward pass through activation func
-# output of first layer in this
-activation1.forward(dense1.output)
-# Make a forward pass through second Dense layer
-# output of second layer in this
-dense2.forward(activation1.output)
-# perform a forward pass through the activation/loss function
-# take the output of second dense layer here and returns loss 
-loss = loss_activation.forward(dense2.output, y)
-# Calculate accuracy from output of activation2 and targets
-# calculate values along first axis
-predictions = np.argmax(loss_activation.output, axis = 1)
-if len(y.shape) == 2:
-    y = np.argmax(y, axis = 1)
-accuracy = np.mean(predictions == y)
+for iteration in range(100000):
+    # Forward pass
+    dense1.forward(X)
+    activation1.forward(dense1.output)
+    dense2.forward(activation1.output)
+    loss = loss_activation.forward(dense2.output, y)
 
+    predictions = np.argmax(loss_activation.output, axis=1)
+    accuracy = np.mean(predictions == y_labels)
 
-# backward pass
-loss_activation.backward(loss_activation.output, y)
-dense2.backward(loss_activation.dinputs)
-activation1.backward(dense2.dinputs)
-dense1.backward(activation1.dinputs)
+    # Backward pass
+    loss_activation.backward(loss_activation.output, y)
+    dense2.backward(loss_activation.dinputs)
+    activation1.backward(dense2.dinputs)
+    dense1.backward(activation1.dinputs)
 
-print(dense1.dweights)
-print(dense1.dbiases)
-print(dense2.dweights)
-print(dense2.dbiases)
+    # Update weights and biases using the gradients
+    dense1.weights -= learning_rate * dense1.dweights
+    dense1.biases -= learning_rate * dense1.dbiases
+    dense2.weights -= learning_rate * dense2.dweights
+    dense2.biases -= learning_rate * dense2.dbiases
 
-print(loss_activation.output[:5])
-print("loss:", loss)
-print("accuracy:", accuracy)
+    if iteration % 1000 == 0:
+        print(f"iteration: {iteration}, loss: {loss:.3f}, accuracy: {accuracy:.3f}")
