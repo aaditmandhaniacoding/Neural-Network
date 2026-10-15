@@ -9,6 +9,8 @@ learning_rate = .001
 
 class Activation_Relu:
     def forward(self, inputs):
+        self.inputs = inputs
+
         # calculate output values from input
         self.output = np.maximum(0, inputs)
     def backward(self, dvalues):
@@ -75,6 +77,7 @@ class Layer_Dense:
         self.biases = np.zeros((1,n_neurons)) # creates a row with n_neurons amount of columns of zeroes
 
     def forward(self, inputs):
+        self.inputs = inputs
         # calculate output values from input, weights, and biases
         self.output = np.dot(inputs, self.weights) + self.biases
 
@@ -95,63 +98,39 @@ dense2 = Layer_Dense(3, 3)
 # create a Softmax activation (will be used with dense layer):
 activation2 = Activation_SoftMax()
 # create a loss function
-loss_function = Loss_CategoricalentropyLoss()
+loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
 
-#Helper Variables
-lowest_loss = 9999999
-best_dense1_weights = dense1.weights.copy()
-best_dense1_biases = dense1.biases.copy()
-best_dense2_weights = dense2.weights.copy()
-best_dense2_biases = dense2.biases.copy()
 
-for iteration in range(10000):
-    dense1.weights += .05 * np.random.randn(2, 3)
-    dense1.biases += .05 * np.random.randn(1, 3)
-    dense2.weights += .05 * np.random.randn(3, 3)
-    dense2.biases += .05 * np.random.randn(1, 3)
-    # perform a forward pass of the training data through this layer
-    dense1.forward(X)
-
-    #Make a forward pass through activation func
-    # output of first layer in this
-    activation1.forward(dense1.output)
-    # Make a forward pass through second Dense layer
-    # output of second layer in this
-    dense2.forward(activation1.output)
-    # Make a forward pass through activation func
-    # output of second layer in this
-    activation2.forward(dense2.output)
-    loss = loss_function.calculate(activation2.output, y)
-
-    # Calculate accuracy from output of activation2 and targets
-    # calculate values along first axis
-    predictions = np.argmax(activation2.output, axis = 1)
-    accuracy = np.mean(predictions == y)
-
-    if loss < lowest_loss:
-        print("New set of weights found, iteration", iteration, "loss:", loss, "acc:", accuracy)
-        best_dense1_weights = dense1.weights.copy()
-        best_dense1_biases = dense1.biases.copy()
-        best_dense2_weights = dense2.weights.copy()
-        best_dense2_biases = dense2.biases.copy()
-        lowest_loss = loss
-    else:
-        dense1.weights = best_dense1_weights.copy()
-        dense1.biases = best_dense1_biases.copy()
-        dense2.weights = best_dense2_weights.copy()
-        dense2.biases = best_dense2_biases.copy()
 # perform a forward pass of the training data through this layer
 dense1.forward(X)
-
-# Make a forward pass through activation func
+#Make a forward pass through activation func
 # output of first layer in this
 activation1.forward(dense1.output)
 # Make a forward pass through second Dense layer
 # output of second layer in this
 dense2.forward(activation1.output)
-# Make a forward pass through activation func
-# output of second layer in this
-activation2.forward(dense2.output)
-loss = loss_function.calculate(activation2.output, y)
-print(activation2.output[:5])
-print(loss)
+# perform a forward pass through the activation/loss function
+# take the output of second dense layer here and returns loss 
+loss = loss_activation.forward(dense2.output, y)
+# Calculate accuracy from output of activation2 and targets
+# calculate values along first axis
+predictions = np.argmax(loss_activation.output, axis = 1)
+if len(y.shape) == 2:
+    y = np.argmax(y, axis = 1)
+accuracy = np.mean(predictions == y)
+
+
+# backward pass
+loss_activation.backward(loss_activation.output, y)
+dense2.backward(loss_activation.dinputs)
+activation1.backward(dense2.dinputs)
+dense1.backward(activation1.dinputs)
+
+print(dense1.dweights)
+print(dense1.dbiases)
+print(dense2.dweights)
+print(dense2.dbiases)
+
+print(loss_activation.output[:5])
+print("loss:", loss)
+print("accuracy:", accuracy)
